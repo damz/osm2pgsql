@@ -461,9 +461,15 @@ static int pgsql_nodes_set(osmid_t id, double lat, double lon, struct keyval *ta
 }
 
 static int middle_nodes_set(osmid_t id, double lat, double lon, struct keyval *tags) {
-    ram_cache_nodes_set( id, lat, lon, tags );
-
-    return (out_options->flat_node_cache_enabled) ? persistent_cache_nodes_set(id, lat, lon) : pgsql_nodes_set(id, lat, lon, tags);
+    if (out_options->flat_node_cache_enabled)
+    {
+        return persistent_cache_nodes_set(id, lat, lon);
+    }
+    else
+    {
+        ram_cache_nodes_set( id, lat, lon, tags );
+        return pgsql_nodes_set(id, lat, lon, tags);
+    }
 }
 
 
